@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
+﻿// Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -17,42 +17,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#if WIN8METRO
 
-using System;
-using System.Diagnostics;
-
-using SharpDX;
-using SharpDX.Direct3D11;
-
-namespace MiniTriApp
+namespace SharpDX.Toolkit
 {
     /// <summary>
-    /// This class implements the minimal interface to draw a Direct3D content into a XAML DrawingSurface.
+    /// A <see cref="GameWindowContext"/> to use for rendering in a WinRT program.
     /// </summary>
-    public class SimpleRenderer : DrawingSurfaceBackgroundContentProviderNativeBase
+    public class GameWindowContextFrameView : GameWindowContext
     {
-        private DrawingSurfaceRuntimeHost host;
-
-        public override void Connect(DrawingSurfaceRuntimeHost host, Device device)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameWindowContextFrameView" /> class.
+        /// </summary>
+        public GameWindowContextFrameView()
         {
-            this.host = host;
-        }
-
-        public override void Disconnect()
-        {
-        }
-
-        public override void PrepareResources(DateTime presentTargetTime, ref Size2F desiredRenderTargetSize)
-        {
-        }
-
-        public override void Draw(Device device, DeviceContext context, RenderTargetView renderTargetView)
-        {
-            // We just clear the render target view
-            context.ClearRenderTargetView(renderTargetView, Color.CornflowerBlue);
-
-            // Ask the DrawingSurface to call us back
-            host.RequestAdditionalFrame();
         }
     }
 }
+#endif

@@ -40,114 +40,41 @@ It compiles all files of type ToolkitFxc/ToolkitFont
     <AvailableItemName Include="ToolkitAudio"></AvailableItemName>
   </ItemGroup>
 
-  <!-- Global property most of them are overridable in the project including this project file -->
-  <!-- The Most important variable is SharpDXSdkDir that should be a global system environement variable --> 
-  <PropertyGroup>
-    <!--Detect SharpDX Platform based on .NETFramework version-->
-
-    <!--By default DX11 is used for Desktop platform and DX11.2 for WinRT-->
-    <SharpDXDirectXVersion Condition="'$(SharpDXDirectXVersion)' == '' and '$(TargetFrameworkIdentifier)' == '.NETFramework'">DirectX11</SharpDXDirectXVersion>
-    <SharpDXDirectXVersion Condition="'$(SharpDXDirectXVersion)' == '' and '$(TargetFrameworkIdentifier)' == '.NETCore'">DirectX11_2</SharpDXDirectXVersion>
-
-    <SharpDXPlatform Condition="'$(SharpDXPlatform)' == '' and '$(TargetFrameworkIdentifier)' == '.NETFramework' and ('$(TargetFrameworkVersion)' == 'v2.0' or '$(TargetFrameworkVersion)' == 'v3.5') ">DirectX11-net20</SharpDXPlatform>
-    <SharpDXPlatform Condition="'$(SharpDXPlatform)' == '' and '$(TargetFrameworkIdentifier)' == '.NETFramework' and $(TargetFrameworkVersion.Contains('v4'))">$(SharpDXDirectXVersion)-net40</SharpDXPlatform>
-    <SharpDXPlatform Condition="'$(SharpDXPlatform)' == '' and '$(TargetFrameworkIdentifier)' == '.NETCore'">$(SharpDXDirectXVersion)-winrt</SharpDXPlatform>
-    <SharpDXPlatform Condition="'$(SharpDXPlatform)' == '' and '$(TargetFrameworkIdentifier)' == 'WindowsPhone' and $(TargetFrameworkVersion.Contains('v8'))">DirectX11_1-wp8-$(Platform)</SharpDXPlatform>
-    <SharpDXPlatform Condition="'$(SharpDXPlatform)' == '' and '$(TargetPlatformIdentifier)' == 'WindowsPhoneApp' and '$(TargetPlatformVersion)' == '8.1'">DirectX11_2-wp81</SharpDXPlatform>
-
-    <!-- Variable used to select the platform used for the tool at compile time - default to Win8Desktop-net40 -->
-    <SharpDXPlatformTool Condition="'$(SharpDXPlatformTool)' == ''">DirectX11-net40</SharpDXPlatformTool>
-    
-    <!-- Flag indicating the platform is desktop -->
-    <SharpDXIsPlatformDesktop Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">true</SharpDXIsPlatformDesktop>
-    
-    <!--Root SharpDX SDK Directory where assemblies are stored. This variable should be set as a Global System Environement Variable -->
-    <SharpDXSdkDir>$(MSBuildThisFileDirectory)</SharpDXSdkDir>
-
-    <!--SharpDX Directory to link against - based on platform-->
-    <SharpDXSdkBinDir Condition="'$(SharpDXSdkBinDir)' == ''">$(SharpDXSdkDir)\Bin\$(SharpDXPlatform)</SharpDXSdkBinDir>
-    
-    <!--SharpDX Directory used for compiling - Default to DirectX11-net40-->
-    <!--<SharpDXSdkToolsDir Condition="'$(SharpDXSdkToolsDir)' == ''">$(SharpDXSdkDir)\Bin\Win8Desktop-net40</SharpDXSdkToolsDir>-->
-    <SharpDXSdkToolsDir Condition="'$(SharpDXSdkToolsDir)' == ''">$(SharpDXSdkDir)\Bin\$(SharpDXPlatformTool)</SharpDXSdkToolsDir>
-  </PropertyGroup>
-
-  <!-- Automatically adds references to SharpDX assemblies for toolkit -->
-  <ItemGroup>
-    <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Game">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Graphics">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Input">
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Yaml">
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Yaml.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Audio">
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Audio.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.XAudio2.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
   <!-- If we are on desktop, we can safely add a reference to Compiler -->
-  <ItemGroup Condition="Exists('$(SharpDXSdkBinDir)\SharpDX.Toolkit.Compiler.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
+  <ItemGroup Condition="Exists('$(SharpDXPackageBinDir)\SharpDX.Toolkit.Compiler.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <Reference Include="SharpDX.Toolkit.Compiler">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Toolkit.Compiler.dll</HintPath>
+      <HintPath>$(SharpDXPackageBinDir)\SharpDX.Toolkit.Compiler.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
+  <ItemGroup Condition="Exists('$(SharpDXPackageBinDir)\SharpDX.D3DCompiler.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <Reference Include="SharpDX.D3DCompiler">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>$(SharpDXPackageBinDir)\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <!--Copy Assimp32 / Assimp64 dll on desktop-->
-  <ItemGroup Condition="Exists('$(SharpDXSdkBinDir)\Assimp32.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
-    <Content Include="$(SharpDXSdkBinDir)\Assimp32.dll">
+  <ItemGroup Condition="Exists('$(SharpDXPackageBinDir)\Assimp32.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <Content Include="$(SharpDXPackageBinDir)\Assimp32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Assimp32.dll</Link>
     </Content>
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('$(SharpDXSdkBinDir)\Assimp64.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
-    <Content Include="$(SharpDXSdkBinDir)\Assimp64.dll">
+  <ItemGroup Condition="Exists('$(SharpDXPackageBinDir)\Assimp64.dll') and '$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <Content Include="$(SharpDXPackageBinDir)\Assimp64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Assimp64.dll</Link>
     </Content>
   </ItemGroup>
 
   <!-- If we are on desktop or WinRT, we can safely add a reference to Direct2D1 -->
-  <ItemGroup Condition="Exists('$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll') and ('$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETCore' or '$(TargetPlatformIdentifier)' == 'WindowsPhoneApp')">
+  <ItemGroup Condition="Exists('$(SharpDXPackageBinDir)\SharpDX.Direct2D1.dll') and ('$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETCore' or '$(TargetPlatformIdentifier)' == 'WindowsPhoneApp')">
     <Reference Include="SharpDX.Direct2D1">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>$(SharpDXPackageBinDir)\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
   </ItemGroup>
 

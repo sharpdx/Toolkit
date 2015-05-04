@@ -18,9 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using SharpDX.Mathematics;
-using RectangleF = SharpDX.Mathematics.RectangleF;
 #if !W8CORE
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -146,7 +145,7 @@ namespace SharpDX.Toolkit.Input
                 case User32.WM_RBUTTONDOWN:
                 case User32.WM_RBUTTONUP:
                 case User32.WM_MOUSEMOTION:
-                    if ((User32.GetMessageExtraInfo().ToInt32() & User32.MOUSEEVENTF_FROMTOUCH) == User32.MOUSEEVENTF_FROMTOUCH)
+                    if ((User32.GetMessageExtraInfo().ToInt64() & User32.MOUSEEVENTF_FROMTOUCH) == User32.MOUSEEVENTF_FROMTOUCH)
                         return 1;
                     break;
             }

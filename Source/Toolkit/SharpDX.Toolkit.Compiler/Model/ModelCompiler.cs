@@ -157,13 +157,13 @@ namespace SharpDX.Toolkit.Graphics
             modelDirectory = Path.GetDirectoryName(modelFilePath);
 
             // Preload AssimpLibrary if not already loaded
-            if (!AssimpLibrary.Instance.LibraryLoaded)
+            if (!AssimpLibrary.Instance.IsLibraryLoaded)
             {
                 var rootPath = Path.GetDirectoryName(typeof(AssimpLibrary).Assembly.Location);
                 AssimpLibrary.Instance.LoadLibrary(Path.Combine(rootPath, AssimpLibrary.Instance.DefaultLibraryPath32Bit), Path.Combine(rootPath, AssimpLibrary.Instance.DefaultLibraryPath64Bit));
             }
 
-            var importer = new AssimpImporter();
+            var importer = new AssimpContext();
             importer.SetConfig(new Assimp.Configs.MaxBoneCountConfig(72));
             //importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
 
@@ -218,20 +218,20 @@ namespace SharpDX.Toolkit.Graphics
             ProcessAnimations();
         }
 
-        private void CollectEmbeddedTextures(Texture[] textures)
+        private void CollectEmbeddedTextures(List<EmbeddedTexture> textures)
         {
             if (textures == null)
             {
                 return;
             }
 
-            for (int i = 0; i < textures.Length; i++)
+            for (int i = 0; i < textures.Count; i++)
             {
                 if (textures[i].IsCompressed)
                 {
-                    var compressedTexture = (CompressedTexture)textures[i];
-                    CheckTextureFormat(compressedTexture.FormatHint);
-                    model.Textures.Add(compressedTexture.Data);
+                    var compressedTexture = textures[i];
+                    CheckTextureFormat(compressedTexture.CompressedFormatHint);
+                    model.Textures.Add(compressedTexture.CompressedData);
                 }
                 else
                 {
@@ -317,25 +317,25 @@ namespace SharpDX.Toolkit.Graphics
                         switch (rawProperty.PropertyType)
                         {
                             case PropertyType.String:
-                                properties.Add(key, rawProperty.AsString());
+                                properties.Add(key, rawProperty.GetStringValue());
                                 break;
                             case PropertyType.Float:
                                 switch (rawProperty.ByteCount / 4)
                                 {
                                     case 1:
-                                        properties.Add(key, rawProperty.AsFloat());
+                                        properties.Add(key, rawProperty.GetFloatValue());
                                         break;
                                     case 2:
-                                        properties.Add(key, new Vector2(rawProperty.AsFloatArray()));
+                                        properties.Add(key, new Vector2(rawProperty.GetFloatArrayValue()));
                                         break;
                                     case 3:
-                                        properties.Add(key, new Vector3(rawProperty.AsFloatArray()));
+                                        properties.Add(key, new Vector3(rawProperty.GetFloatArrayValue()));
                                         break;
                                     case 4:
-                                        properties.Add(key, new Vector4(rawProperty.AsFloatArray()));
+                                        properties.Add(key, new Vector4(rawProperty.GetFloatArrayValue()));
                                         break;
                                     case 16:
-                                        properties.Add(key, new Matrix(rawProperty.AsFloatArray()));
+                                        properties.Add(key, new Matrix(rawProperty.GetFloatArrayValue()));
                                         break;
                                 }
                                 break;
@@ -343,10 +343,10 @@ namespace SharpDX.Toolkit.Graphics
                                 switch (rawProperty.ByteCount / 4)
                                 {
                                     case 1:
-                                        properties.Add(key, rawProperty.AsInteger());
+                                        properties.Add(key, rawProperty.GetIntegerValue());
                                         break;
                                     default:
-                                        properties.Add(key, rawProperty.AsIntegerArray());
+                                        properties.Add(key, rawProperty.GetIntegerArrayValue());
                                         break;
                                 }
                                 break;
@@ -363,7 +363,7 @@ namespace SharpDX.Toolkit.Graphics
             {
                 if (textureType != TextureType.None)
                 {
-                    var textures = rawMaterial.GetTextures(textureType);
+                    var textures = rawMaterial.GetMaterialTextures(textureType);
                     if (textures != null)
                     {
                         var materialTextures = new List<ModelData.MaterialTexture>();
@@ -380,6 +380,9 @@ namespace SharpDX.Toolkit.Graphics
                                 textureFilePath = textureFilePath.Substring(2);
                             }
 
+                            if (textureSlot.WrapModeU != textureSlot.WrapModeV)
+                                throw new NotImplementedException("WrapModeU != WrapModeV");
+
                             var newTextureSlot = new ModelData.MaterialTexture()
                                                      {
                                                          FilePath = textureFilePath,
@@ -387,7 +390,8 @@ namespace SharpDX.Toolkit.Graphics
                                                          Operation = (MaterialTextureOperator)textureSlot.Operation,
                                                          Index = (int)textureSlot.TextureIndex,
                                                          UVIndex = (int)textureSlot.UVIndex,
-                                                         WrapMode = ConvertWrapMode(textureSlot.WrapMode),
+                                                         // TODO: support different U/V wrapmodes
+                                                         WrapMode = ConvertWrapMode(textureSlot.WrapModeU),
                                                          Flags = (MaterialTextureFlags)textureSlot.Flags
                                                      };
 
@@ -727,13 +731,13 @@ namespace SharpDX.Toolkit.Graphics
             }
 
             // Add textures
-            if (assimpMesh.TextureCoordsChannelCount > 0)
+            if (assimpMesh.TextureCoordinateChannelCount > 0)
             {
-                for (int localIndex = 0, i = 0; i < assimpMesh.TextureCoordsChannelCount; i++)
+                for (int localIndex = 0, i = 0; i < assimpMesh.TextureCoordinateChannelCount; i++)
                 {
                     if (assimpMesh.HasTextureCoords(i))
                     {
-                        var uvCount = assimpMesh.GetUVComponentCount(i);
+                        var uvCount = assimpMesh.UVComponentCount[i];
 
                         if (uvCount == 2)
                         {
@@ -773,7 +777,7 @@ namespace SharpDX.Toolkit.Graphics
 
             if (assimpMesh.HasBones)
             {
-                for (int i = 0; i < assimpMesh.Bones.Length; i++)
+                for (int i = 0; i < assimpMesh.Bones.Count; i++)
                 {
                     var bone = assimpMesh.Bones[i];
                     var boneNode = scene.RootNode.FindNode(bone.Name);
@@ -848,21 +852,21 @@ namespace SharpDX.Toolkit.Graphics
                     {
                         if (assimpMesh.HasVertexColors(j))
                         {
-                            vertexStream.Write(assimpMesh.GetVertexColors(j)[i]);
+                            vertexStream.Write(assimpMesh.VertexColorChannels[j][i]);
                         }
                     }
                 }
 
                 // Add textures
-                if (assimpMesh.TextureCoordsChannelCount > 0)
+                if (assimpMesh.TextureCoordinateChannelCount > 0)
                 {
-                    for (int j = 0; j < assimpMesh.TextureCoordsChannelCount; j++)
+                    for (int j = 0; j < assimpMesh.TextureCoordinateChannelCount; j++)
                     {
                         if (assimpMesh.HasTextureCoords(j))
                         {
-                            var uvCount = assimpMesh.GetUVComponentCount(j);
+                            var uvCount = assimpMesh.UVComponentCount[j];
 
-                            var uv = assimpMesh.GetTextureCoords(j)[i];
+                            var uv = assimpMesh.TextureCoordinateChannels[j][i];
 
                             if (uvCount == 2)
                             {
@@ -899,7 +903,7 @@ namespace SharpDX.Toolkit.Graphics
             vertexStream.Dispose();
 
             // Write all indices
-            var indices = assimpMesh.GetIntIndices();
+            var indices = assimpMesh.GetIndices();
             indexBuffer.Count = indices.Length;
             meshPart.IndexBufferRange.Count = indices.Length;
             if (meshPart.VertexBufferRange.Count < 65536)

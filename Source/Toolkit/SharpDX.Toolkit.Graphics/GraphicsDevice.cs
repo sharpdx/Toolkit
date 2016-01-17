@@ -1088,7 +1088,7 @@ namespace SharpDX.Toolkit.Graphics
             for (int i = 0; i < viewports.Length; i++)
                 this.viewports[i] = viewports[i];
 
-            RasterizerStage.SetViewports(this.viewports, viewports.Length);
+            RasterizerStage.SetViewports(Array.ConvertAll(this.viewports, vp => (Mathematics.Interop.RawViewportF)vp), viewports.Length);
         }
 
         /// <summary>

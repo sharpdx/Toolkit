@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Rectangle = SharpDX.Mathematics.Rectangle;
+using Rectangle = SharpDX.Rectangle;
 #if !W8CORE
 using System;
 using System.Threading;

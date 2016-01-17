@@ -152,14 +152,43 @@ namespace SharpDX.Toolkit.Graphics
             if (textureData.Length != 6)
                 throw new ArgumentException("Invalid texture data. First dimension must be equal to 6", "textureData");
 
-            var dataBox1 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[0]));
-            var dataBox2 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[1]));
-            var dataBox3 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[2]));
-            var dataBox4 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[3]));
-            var dataBox5 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[4]));
-            var dataBox6 = GetDataBox(format, size, size, 1, textureData[0], (IntPtr)Interop.Fixed(textureData[5]));
+            TextureCube cube = null;
 
-            return new TextureCube(device, NewTextureCubeDescription(size, format, flags | TextureFlags.ShaderResource, 1, usage), dataBox1, dataBox2, dataBox3, dataBox4, dataBox5, dataBox6);
+            Utilities.Pin(textureData[0], ptr1 =>
+            {
+                var dataBox1 = GetDataBox(format, size, size, 1, textureData[0], ptr1);
+
+                Utilities.Pin(textureData[1], ptr2 =>
+                {
+                    var dataBox2 = GetDataBox(format, size, size, 1, textureData[0], ptr2);
+
+                    Utilities.Pin(textureData[2], ptr3 =>
+                    {
+                        var dataBox3 = GetDataBox(format, size, size, 1, textureData[0], ptr3);
+
+                        Utilities.Pin(textureData[3], ptr4 =>
+                        {
+                            var dataBox4 = GetDataBox(format, size, size, 1, textureData[0], ptr4);
+
+                            Utilities.Pin(textureData[4], ptr5 =>
+                            {
+                                var dataBox5 = GetDataBox(format, size, size, 1, textureData[0], ptr5);
+
+                                Utilities.Pin(textureData[5], ptr6 =>
+                                {
+                                    var dataBox6 = GetDataBox(format, size, size, 1, textureData[0], ptr6);
+
+                                    cube = new TextureCube(device,
+                                        NewTextureCubeDescription(size, format, flags | TextureFlags.ShaderResource, 1, usage),
+                                        dataBox1, dataBox2, dataBox3, dataBox4, dataBox5, dataBox6);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+
+            return cube;
         }
 
         /// <summary>

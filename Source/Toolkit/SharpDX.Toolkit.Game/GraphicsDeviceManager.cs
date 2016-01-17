@@ -475,7 +475,7 @@ namespace SharpDX.Toolkit
 
                     break;
                 default:
-                    Utilities.Sleep(TimeSpan.FromMilliseconds(20));
+                    System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(20));
                     try
                     {
                         OnDeviceLost(this, EventArgs.Empty);

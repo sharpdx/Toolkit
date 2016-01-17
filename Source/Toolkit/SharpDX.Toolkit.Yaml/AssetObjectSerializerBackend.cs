@@ -45,9 +45,9 @@ namespace SharpDX.Toolkit.Yaml
             return LoadAssetIfRequired(memberType, base.ReadMemberValue(ref objectContext, memberDescriptor, memberValue, memberType));
         }
 
-        public override object ReadCollectionItem(ref ObjectContext objectContext, Type itemType)
+        public override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType)
         {
-            return LoadAssetIfRequired(itemType, base.ReadCollectionItem(ref objectContext, itemType));
+            return LoadAssetIfRequired(itemType, base.ReadCollectionItem(ref objectContext, value, itemType));
         }
 
         public override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)

@@ -31,22 +31,4 @@ Thumbs.db
 *.opensdf
 *.suo
 *.dotCover
-sdk-include/
-vc-include/
-SharpDX.Assimp/
-obj/
-ipch*/
-Demo/
-AppPackages/
-[Rr]elease*/
-_ReSharper*/
-[Tt]est[Rr]esult*
-Generated*/
-Build/
-SharpDX.Framework*
-SharpMsdn*/
-Temp*/
-#ignore build log file
-BuildErrors.log
-#ignore certification test results
-Source/CertificationTests/Results/*
+packages

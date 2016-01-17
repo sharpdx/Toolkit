@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 using SharpDX.Mathematics;
-using RectangleF = SharpDX.Mathematics.RectangleF;
+using RectangleF = SharpDX.RectangleF;
 #if !W8CORE
 using System;
 using System.Collections.Generic;

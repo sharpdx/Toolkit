@@ -169,7 +169,7 @@ namespace SharpDX.Toolkit.Graphics
                     0.0f))
                 {
 
-                    var bounds = new Mathematics.Rectangle(0, 0, pixelWidth, pixelHeight);
+                    var bounds = new SharpDX.Rectangle(0, 0, pixelWidth, pixelHeight);
                     bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
 
                     if (renderingMode == RenderingMode.Aliased)

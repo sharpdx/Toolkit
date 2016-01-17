@@ -8,7 +8,15 @@
     <RootNamespace>SharpDX.Toolkit.Input</RootNamespace>
     <AssemblyName>SharpDX.Toolkit.Input</AssemblyName>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(SharpDXWin8Core)' == 'false'">
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\SharpDX.3.0.0\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\SharpDX.Mathematics.3.0.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -59,45 +67,24 @@
     <Compile Include="MousePlatformWinRT.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SharpDX.Direct3D11\SharpDX.Direct3D11.csproj">
-      <Project>{736dfb52-1afe-4eff-9710-89046ab5b1f9}</Project>
-      <Name>SharpDX.Direct3D11</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SharpDX.DXGI\SharpDX.DXGI.csproj">
-      <Project>{3fc6de77-b412-4101-9e64-6b9aa831179b}</Project>
-      <Name>SharpDX.DXGI</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SharpDX.Mathematics\SharpDX.Mathematics.csproj">
-      <Project>{49e4485f-3a2a-4c35-a159-12eccfc00396}</Project>
-      <Name>SharpDX.Mathematics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SharpDX\SharpDX.csproj">
-      <Project>{d0bcd56a-41c4-4a4e-8590-26864ced07ff}</Project>
-      <Name>SharpDX</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SharpDX.Toolkit.Graphics\SharpDX.Toolkit.Graphics.csproj">
       <Project>{53ef08a7-4224-434c-a62c-f29807c1c750}</Project>
       <Name>SharpDX.Toolkit.Graphics</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SharpDX.Toolkit\SharpDX.Toolkit.csproj">
       <Project>{9ff0707c-75bb-4984-a01f-b9eaad293f6c}</Project>
       <Name>SharpDX.Toolkit</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SharpDX.Toolkit.Game\SharpDX.Toolkit.Game.csproj">
       <Project>{B2516A23-1A99-4263-964A-B820FD07FA80}</Project>
       <Name>SharpDX.Toolkit.Game</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="SharpDX.Toolkit.Input.nuspec" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\Build\SharpDX.PostSettings.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

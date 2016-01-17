@@ -286,10 +286,10 @@ namespace SharpDX.Toolkit.Graphics
                 SlotLink* pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetShaderResources(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers);
+                    shaderStage.SetShaderResources(pLinks->SlotIndex, pLinks->SlotCount, new ShaderResourceView[pLinks->SlotCount]);
                     pLinks++;
                 }
-
+#if UNIMPLEMENTED
                 // ----------------------------------------------
                 // Reset UnorderedAccessView
                 // ----------------------------------------------
@@ -313,7 +313,7 @@ namespace SharpDX.Toolkit.Graphics
                         pLinks++;
                     }
                 }
-
+#endif
                 if (fullUnApply)
                 {
                     // ----------------------------------------------
@@ -323,7 +323,7 @@ namespace SharpDX.Toolkit.Graphics
                     pLinks = localLink.Links;
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        shaderStage.SetConstantBuffers(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers);
+                        shaderStage.SetConstantBuffers(pLinks->SlotIndex, pLinks->SlotCount, new Direct3D11.Buffer[pLinks->SlotCount]);
                         pLinks++;
                     }
                 }
@@ -355,6 +355,15 @@ namespace SharpDX.Toolkit.Graphics
                     graphicsDevice.SetRasterizerState(null);
                 }
             }
+        }
+
+        private static unsafe T[] IntPtrArrayToT<T>(IntPtr arrayPtr, int count, Func<IntPtr, T> constr)
+        {
+            IntPtr* ptr = (IntPtr*)arrayPtr;
+            var arr = new T[count];
+            for (int i = 0; i < count; ++i)
+                arr[i] = constr(ptr[i]);
+            return arr;
         }
 
         /// <summary>
@@ -447,7 +456,8 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetConstantBuffers(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    shaderStage.SetConstantBuffers(pLinks->SlotIndex,
+                        IntPtrArrayToT(pLinks->Pointer, pLinks->SlotCount, ptr => new Direct3D11.Buffer(ptr)));
                     pLinks++;
                 }
 
@@ -458,10 +468,11 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetShaderResources(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    shaderStage.SetShaderResources(pLinks->SlotIndex,
+                        IntPtrArrayToT(pLinks->Pointer, pLinks->SlotCount, ptr => new ShaderResourceView(ptr)));
                     pLinks++;
                 }
-
+#if UNIMPLEMENTED
                 // ----------------------------------------------
                 // Setup UnorderedAccessView
                 // ----------------------------------------------
@@ -485,7 +496,7 @@ namespace SharpDX.Toolkit.Graphics
                         pLinks++;
                     }
                 }
-
+#endif
                 // ----------------------------------------------
                 // Setup SamplerStates
                 // ----------------------------------------------
@@ -493,7 +504,8 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetSamplers(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    shaderStage.SetSamplers(pLinks->SlotIndex,
+                        IntPtrArrayToT(pLinks->Pointer, pLinks->SlotCount, ptr => new Direct3D11.SamplerState(ptr)));
                     pLinks++;
                 }
             }

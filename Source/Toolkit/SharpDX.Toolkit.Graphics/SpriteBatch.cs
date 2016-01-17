@@ -687,6 +687,8 @@ namespace SharpDX.Toolkit.Graphics
                 }
                 else
                 {
+                    throw new NotImplementedException();
+#if NOTIMPLEMENTED
                     IntPtr resourcePtr;
                     shaderResourceView.GetResource(out resourcePtr);
                     tempResource._nativePointer = (void*)resourcePtr;
@@ -721,6 +723,7 @@ namespace SharpDX.Toolkit.Graphics
 
                     // Release the resource retrieved by shaderResourceView.GetResource(out resourcePtr);
                     Marshal.Release(resourcePtr);
+#endif
                 }
 
                 textureInfos.Add(shaderResourceView, textureInfo);
@@ -820,6 +823,8 @@ namespace SharpDX.Toolkit.Graphics
             }
             else
             {
+                throw new NotImplementedException();
+#if NOTIMPLEMENTED
                 unsafe
                 {
                     // Sets the texture for this sprite effect.
@@ -833,6 +838,7 @@ namespace SharpDX.Toolkit.Graphics
 
                 // unbind the texture from pass as it can be used later as a render target
                 GraphicsDevice.PixelShaderStage.SetShaderResources(0, 1, GraphicsDevice.ResetSlotsPointers);
+#endif
             }
         }
 

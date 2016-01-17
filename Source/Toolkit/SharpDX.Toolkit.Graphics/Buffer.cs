@@ -311,7 +311,10 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>	
         public unsafe void GetData<TData>(Buffer stagingTexture, ref TData toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(ref toData), Utilities.SizeOf<TData>()));
+            Utilities.Pin(ref toData, ptr =>
+            {
+                GetData(stagingTexture, new DataPointer(ptr, Utilities.SizeOf<TData>()));
+            });
         }
 
         /// <summary>
@@ -329,7 +332,10 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>	
         public unsafe void GetData<TData>(Buffer stagingTexture, TData[] toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
+            Utilities.Pin(toData, ptr =>
+            {
+                GetData(stagingTexture, new DataPointer(ptr, toData.Length * Utilities.SizeOf<TData>()));
+            });
         }
 
         /// <summary>
@@ -438,7 +444,10 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>
         public unsafe void SetData<TData>(GraphicsDevice device, ref TData fromData, int offsetInBytes = 0, SetDataOptions options = SetDataOptions.Discard) where TData : struct
         {
-            SetData(device, new DataPointer(Interop.Fixed(ref fromData), Utilities.SizeOf<TData>()), offsetInBytes, options);
+            Utilities.Pin(ref fromData, ptr =>
+            {
+                SetData(device, new DataPointer(ptr, Utilities.SizeOf<TData>()), offsetInBytes, options);
+            });
         }
 
         /// <summary>
@@ -460,10 +469,13 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>
         public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int startIndex = 0, int elementCount = 0, int offsetInBytes = 0, SetDataOptions options = SetDataOptions.Discard) where TData : struct
         {
-            var sizeOfT = Interop.SizeOf<TData>();
-            var sourcePtr = (IntPtr)((byte*) Interop.Fixed(fromData) + startIndex*sizeOfT);
-            var sizeOfData = (elementCount == 0 ? fromData.Length : elementCount)*sizeOfT;
-            SetData(device, new DataPointer(sourcePtr, sizeOfData), offsetInBytes, options);
+            Utilities.Pin(fromData, ptr =>
+            {
+                var sizeOfT = Utilities.SizeOf<TData>();
+                var sourcePtr = (IntPtr)((byte*)ptr + startIndex * sizeOfT);
+                var sizeOfData = (elementCount == 0 ? fromData.Length : elementCount) * sizeOfT;
+                SetData(device, new DataPointer(sourcePtr, sizeOfData), offsetInBytes, options);
+            });
         }
 
         /// <summary>
@@ -704,7 +716,15 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(ref value));
+
+            Buffer<T> buf = null;
+
+            Utilities.Pin(ref value, ptr =>
+            {
+                buf = new Buffer<T>(device, description, bufferFlags, viewFormat, ptr);
+            });
+
+            return buf;
         }
 
         /// <summary>
@@ -744,7 +764,15 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
+
+            Buffer<T> buf = null;
+
+            Utilities.Pin<T>(initialValue, iptr =>
+            {
+                buf = new Buffer<T>(device, description, bufferFlags, viewFormat, iptr);
+            });
+
+            return buf;
         }
 
         /// <summary>
@@ -766,7 +794,15 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
+
+            Buffer buf = null;
+
+            Utilities.Pin(initialValue, ptr =>
+            {
+                buf = new Buffer(device, description, bufferFlags, viewFormat, ptr);
+            });
+
+            return buf;
         }
 
         /// <summary>

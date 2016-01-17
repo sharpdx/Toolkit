@@ -446,7 +446,7 @@ namespace SharpDX.Toolkit.Audio
                 {
                     Type = FilterType.LowPassFilter,
                     // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-                    Frequency = 2.0f * (float)Math.Sin(X3DAudio.PI / 6.0f * dspSettings.LpfDirectCoefficient),
+                    Frequency = 2.0f * (float)Math.Sin(MathUtil.Pi / 6.0f * dspSettings.LpfDirectCoefficient),
                     OneOverQ = 1.0f
                 };
 
@@ -458,7 +458,7 @@ namespace SharpDX.Toolkit.Audio
                     {
                         Type = FilterType.LowPassFilter,
                         // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-                        Frequency = 2.0f * (float)Math.Sin(X3DAudio.PI / 6.0f * dspSettings.LpfReverbCoefficient),
+                        Frequency = 2.0f * (float)Math.Sin(MathUtil.Pi / 6.0f * dspSettings.LpfReverbCoefficient),
                         OneOverQ = 1.0f
                     };
 

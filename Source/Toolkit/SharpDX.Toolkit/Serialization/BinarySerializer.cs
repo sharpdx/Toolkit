@@ -575,31 +575,34 @@ namespace SharpDX.Toolkit.Serialization
             if (!Utilities.IsEnum(typeof(T)))
                 throw new ArgumentException("T generic parameter must be a valid enum", "value");
 
-            var pValue = Interop.Fixed(ref value);
-
-            switch (Utilities.SizeOf<T>())
+            Utilities.Pin(ref value, iptr =>
             {
-                case 1:
-                    {
-                        Serialize(ref *(byte*)pValue);
-                        break;
-                    }
-                case 2:
-                    {
-                        Serialize(ref *(short*)pValue);
-                        break;
-                    }
-                case 4:
-                    {
-                        Serialize(ref *(int*)pValue);
-                        break;
-                    }
-                case 8:
-                    {
-                        Serialize(ref *(long*)pValue);
-                        break;
-                    }
-            }
+                var pValue = (void*)iptr;
+
+                switch (Utilities.SizeOf<T>())
+                {
+                    case 1:
+                        {
+                            Serialize(ref *(byte*)pValue);
+                            break;
+                        }
+                    case 2:
+                        {
+                            Serialize(ref *(short*)pValue);
+                            break;
+                        }
+                    case 4:
+                        {
+                            Serialize(ref *(int*)pValue);
+                            break;
+                        }
+                    case 8:
+                        {
+                            Serialize(ref *(long*)pValue);
+                            break;
+                        }
+                }
+            });
         }
 
         /// <summary>

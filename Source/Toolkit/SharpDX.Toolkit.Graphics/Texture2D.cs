@@ -151,7 +151,14 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe static Texture2D New<T>(GraphicsDevice device, int width, int height, PixelFormat format, T[] textureData, TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable) where T : struct
         {
-            return New(device, width, height, 1, format, new [] { GetDataBox(format, width, height, 1, textureData, (IntPtr)Interop.Fixed(textureData)) }, flags, 1, usage);
+            Texture2D tex = null;
+
+            Utilities.Pin(textureData, ptr =>
+            {
+                tex = New(device, width, height, 1, format, new[] { GetDataBox(format, width, height, 1, textureData, ptr) }, flags, 1, usage);
+            });
+
+            return tex;
         }
 
         /// <summary>

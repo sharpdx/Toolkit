@@ -129,7 +129,10 @@ namespace SharpDX.Toolkit.Graphics
         public unsafe void Draw(PrimitiveType topology, T[] vertices)
         {
             var mappedVertices = Draw(topology, false, IntPtr.Zero, 0, vertices.Length);
-            Utilities.CopyMemory(mappedVertices, (IntPtr)Interop.Fixed(vertices), vertices.Length * VertexSize) ;
+            Utilities.Pin(vertices, ptr =>
+            {
+                Utilities.CopyMemory(mappedVertices, ptr, vertices.Length * VertexSize) ;
+            });
         }
 
         /// <summary>
@@ -140,8 +143,14 @@ namespace SharpDX.Toolkit.Graphics
         /// <param name="vertices">The vertices.</param>
         public unsafe void DrawIndexed(PrimitiveType topology, short[] indices, T[] vertices)
         {
-            var mappedVertices = Draw(topology, true, (IntPtr)Interop.Fixed(indices), indices.Length, vertices.Length);
-            Utilities.CopyMemory(mappedVertices, (IntPtr)Interop.Fixed(vertices), vertices.Length * VertexSize) ;
+            Utilities.Pin(indices, indicesPtr =>
+            {
+                var mappedVertices = Draw(topology, true, indicesPtr, indices.Length, vertices.Length);
+                Utilities.Pin(vertices, verticesPtr =>
+                {
+                    Utilities.CopyMemory(mappedVertices, verticesPtr, vertices.Length * VertexSize) ;
+                });
+            });
         }
 
         /// <summary>
@@ -179,14 +188,17 @@ namespace SharpDX.Toolkit.Graphics
         /// <param name="v4">The v4.</param>
         public unsafe void DrawQuad(T v1, T v2, T v3, T v4)
         {
-            var mappedVertices = (byte*)Draw(PrimitiveTopology.TriangleList, true, (IntPtr)Interop.Fixed(QuadIndices), 6, 4);
-            Utilities.Write((IntPtr)mappedVertices, ref v1);
-            mappedVertices += VertexSize;
-            Utilities.Write((IntPtr)mappedVertices, ref v2);
-            mappedVertices += VertexSize;
-            Utilities.Write((IntPtr)mappedVertices, ref v3);
-            mappedVertices += VertexSize;
-            Utilities.Write((IntPtr)mappedVertices, ref v4);
+            Utilities.Pin(QuadIndices, ptr =>
+            {
+                var mappedVertices = (byte*)Draw(PrimitiveTopology.TriangleList, true, ptr, 6, 4);
+                Utilities.Write((IntPtr)mappedVertices, ref v1);
+                mappedVertices += VertexSize;
+                Utilities.Write((IntPtr)mappedVertices, ref v2);
+                mappedVertices += VertexSize;
+                Utilities.Write((IntPtr)mappedVertices, ref v3);
+                mappedVertices += VertexSize;
+                Utilities.Write((IntPtr)mappedVertices, ref v4);
+            });
         }
     }
 }

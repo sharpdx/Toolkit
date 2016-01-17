@@ -463,7 +463,14 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe bool GetData<TData>(Texture stagingTexture, TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
         {
-            return GetData(stagingTexture, new DataPointer((IntPtr)Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
+            bool b = false;
+
+            Utilities.Pin(toData, ptr =>
+            {
+                b = GetData(stagingTexture, new DataPointer(ptr, toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
+            });
+
+            return b;
         }
 
         /// <summary>
@@ -615,7 +622,10 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null) where TData : struct
         {
-            SetData(device, new DataPointer((IntPtr)Interop.Fixed(fromData), fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
+            Utilities.Pin(fromData, ptr =>
+            {
+                SetData(device, new DataPointer(ptr, fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
+            });
         }
 
         /// <summary>

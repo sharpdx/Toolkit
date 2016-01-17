@@ -115,7 +115,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null;
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null;
             GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);
         }
 
@@ -191,7 +191,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null;
         }
 
         /// <summary>

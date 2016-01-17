@@ -433,7 +433,7 @@ namespace SharpDX.Toolkit
             // If this instance is not active, sleep for an inactive sleep time
             if (!IsActive)
             {
-                Utilities.Sleep(inactiveSleepTime);
+                System.Threading.Thread.Sleep(inactiveSleepTime);
             }
 
             // Update the timer
@@ -477,7 +477,7 @@ namespace SharpDX.Toolkit
                     // check if we can sleep the thread to free CPU resources
                     var sleepTime = TargetElapsedTime - accumulatedElapsedGameTime;
                     if (sleepTime > TimeSpan.Zero)
-                        Utilities.Sleep(sleepTime);
+                        System.Threading.Thread.Sleep(sleepTime);
 
                     return;
                 }

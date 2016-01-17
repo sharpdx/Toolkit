@@ -1209,7 +1209,7 @@ namespace SharpDX.Toolkit.Graphics
         ///   <unmanaged-short>ID3D11DeviceContext::SOSetTargets</unmanaged-short>
         public void ResetStreamOutputTargets()
         {
-            Context.StreamOutput.SetTargets(0, null, null);
+            Context.StreamOutput.SetTargets(null);
         }
 
         /// <summary>
@@ -1416,7 +1416,7 @@ namespace SharpDX.Toolkit.Graphics
                 throw new InvalidOperationException("Cannot perform a Draw/Dispatch operation without an EffectPass applied.");
 
             var inputLayout = CurrentPass.GetInputLayout(currentVertexInputLayout);
-            InputAssemblerStage.SetInputLayout(inputLayout);
+            InputAssemblerStage.InputLayout = inputLayout;
         }
 
         /// <summary>

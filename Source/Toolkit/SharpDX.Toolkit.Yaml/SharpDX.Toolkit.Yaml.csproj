@@ -9,6 +9,10 @@
     <AssemblyName>SharpDX.Toolkit.Yaml</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpYaml, Version=1.5.3.20680, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\SharpYaml.1.5.3\lib\SharpYaml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -50,11 +54,6 @@
     <Reference Include="SharpDX.Mathematics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\SharpDX.Mathematics.3.0.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpYaml, Version=1.2.0.13711, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\SharpYaml.1.2.0\lib\SharpYaml.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

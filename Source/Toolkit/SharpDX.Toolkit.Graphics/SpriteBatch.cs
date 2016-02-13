@@ -690,6 +690,7 @@ namespace SharpDX.Toolkit.Graphics
                 {
                     // NOTE SmartK8: Verify functionality
                     tempResource.NativePointer = shaderResourceView.NativePointer;
+
                     switch (tempResource.Dimension)
                     {
                         case ResourceDimension.Texture1D:
@@ -720,7 +721,7 @@ namespace SharpDX.Toolkit.Graphics
                     textureInfo.Height = Math.Max(1, textureInfo.Height >> mipIndex);
 
                     // Release the resource retrieved by shaderResourceView.GetResource(out resourcePtr);
-                    Marshal.Release(shaderResourceView.NativePointer); // NOTE SmartK8: Is this still needed? IMO, no.
+                    Marshal.Release(shaderResourceView.NativePointer);
                 }
 
                 textureInfos.Add(shaderResourceView, textureInfo);
@@ -789,7 +790,7 @@ namespace SharpDX.Toolkit.Graphics
             }
         }
 
-        private void DrawBatchPerTexture(ref TextureInfo texture, SpriteInfo[] sprites, int offset, int count)
+        private unsafe void DrawBatchPerTexture(ref TextureInfo texture, SpriteInfo[] sprites, int offset, int count)
         {
             var nativeShaderResourceViewPointer = texture.ShaderResourceView;
 
@@ -826,7 +827,7 @@ namespace SharpDX.Toolkit.Graphics
                 // setup in the original BasicEffect.fx shader.
                 // NOTE SmartK8 : Calls internal method
                 MethodInfo setShaderResources = GraphicsDevice.PixelShaderStage.GetType().GetMethod("SetShaderResources", BindingFlags.NonPublic | BindingFlags.Instance);
-                setShaderResources.Invoke(GraphicsDevice.PixelShaderStage, new Object[] { 0, 1, nativeShaderResourceViewPointer });
+                setShaderResources.Invoke(GraphicsDevice.PixelShaderStage, new Object[] { 0, 1, new IntPtr(&nativeShaderResourceViewPointer) });
 
                 DrawBatchPerTextureAndPass(ref texture, sprites, offset, count);
 

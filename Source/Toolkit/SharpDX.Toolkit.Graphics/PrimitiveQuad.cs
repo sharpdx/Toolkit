@@ -68,7 +68,7 @@ namespace SharpDX.Toolkit.Graphics
         public GraphicsDevice GraphicsDevice { get; private set; }
 
         /// <summary>
-        /// Gets or sets the color. Default is <see cref="Mathematics.Color.White"/>.
+        /// Gets or sets the color. Default is <see cref="SharpDX.Color.White"/>.
         /// </summary>
         /// <value>The color.</value>
         public Color4 Color
@@ -115,7 +115,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null; // NOTE SmartK8: Verify functionality
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null; // NOTE SmartK8: Verify functionality
             GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);
         }
 
@@ -191,7 +191,7 @@ namespace SharpDX.Toolkit.Graphics
 
             // Reset the vertex buffer
             GraphicsDevice.SetVertexBuffer(0, null, 0);
-            GraphicsDevice.InputAssemblerStage.SetInputLayout(null);
+            GraphicsDevice.InputAssemblerStage.InputLayout = null; // NOTE SmartK8: Verify functionality
         }
 
         /// <summary>

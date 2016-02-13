@@ -20,6 +20,7 @@
 #if !W8CORE && NET35Plus
 
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
@@ -29,6 +30,43 @@ namespace SharpDX.Toolkit
     {
         private readonly HandleRef childHandle;
 
+        #region | Native |
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
+        private static extern IntPtr GetWindowLong32(HandleRef hwnd, WindowLongType index);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
+        private static extern IntPtr GetWindowLong64(HandleRef hwnd, WindowLongType index);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLong32(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLongPtr64(HandleRef hwnd, WindowLongType index, IntPtr wndProc);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SetParent(HandleRef hWnd, IntPtr hWndParent);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern bool ShowWindow(HandleRef hWnd, int mCmdShow);
+
+        public static IntPtr GetWindowLong(HandleRef hWnd, WindowLongType index)
+        {
+            if (IntPtr.Size == 4) return GetWindowLong32(hWnd, index);
+            return GetWindowLong64(hWnd, index);
+        }
+        public static IntPtr SetWindowLong(HandleRef hwnd, WindowLongType index, IntPtr wndProcPtr)
+        {
+            if (IntPtr.Size == 4) return SetWindowLong32(hwnd, index, wndProcPtr);
+            return SetWindowLongPtr64(hwnd, index, wndProcPtr);
+        }
+        public static bool ShowWindow(HandleRef hWnd, bool windowVisible)
+        {
+            return ShowWindow(hWnd, windowVisible ? 1 : 0);
+        }
+
+        #endregion
+
         public ToolkitHwndHost(IntPtr childHandle)
         {
             this.childHandle = new HandleRef(this, childHandle);
@@ -36,25 +74,25 @@ namespace SharpDX.Toolkit
 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            int style = (Win32Native.GetWindowLong(childHandle, Win32Native.WindowLongType.Style)).ToInt32();
+            int style = GetWindowLong(childHandle, WindowLongType.Style).ToInt32();
             // Removes Caption bar and the sizing border
             style = style & ~WS_CAPTION & ~WS_THICKFRAME;
             // Must be a child window to be hosted
             style |= WS_CHILD;
 
-            Win32Native.SetWindowLong(childHandle, Win32Native.WindowLongType.Style, new IntPtr(style));
+            SetWindowLong(childHandle, WindowLongType.Style, new IntPtr(style));
 
             //MoveWindow(childHandle, 0, 0, (int)ActualWidth, (int)ActualHeight, true);
-            Win32Native.SetParent(childHandle, hwndParent.Handle);
+            SetParent(childHandle, hwndParent.Handle);
 
-            Win32Native.ShowWindow(childHandle, false);
+            ShowWindow(childHandle, false);
 
             return childHandle;
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            Win32Native.SetParent(childHandle, IntPtr.Zero);
+            SetParent(childHandle, IntPtr.Zero);
         }
 
         protected override void OnRenderSizeChanged(System.Windows.SizeChangedInfo sizeInfo)
@@ -67,6 +105,17 @@ namespace SharpDX.Toolkit
         private const int WS_THICKFRAME = unchecked(0x00040000);
         private const int WS_CHILD = unchecked(0x40000000);
         // ReSharper restore InconsistentNaming
+
+        public enum WindowLongType
+        {
+            UserData = -21,
+            ExtendedStyle = -20,
+            Style = -16,
+            Id = -12,
+            HwndParent = -8,
+            HInstance = -6,
+            WndProc = -4,
+        }
     }
 }
 #endif

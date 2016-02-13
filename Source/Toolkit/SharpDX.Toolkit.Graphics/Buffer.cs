@@ -311,7 +311,7 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>	
         public unsafe void GetData<TData>(Buffer stagingTexture, ref TData toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(ref toData), Utilities.SizeOf<TData>()));
+            GetData(stagingTexture, new DataPointer(Native.Fixed(ref toData), Utilities.SizeOf<TData>()));
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>	
         public unsafe void GetData<TData>(Buffer stagingTexture, TData[] toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
+            GetData(stagingTexture, new DataPointer(Native.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>
         public unsafe void SetData<TData>(GraphicsDevice device, ref TData fromData, int offsetInBytes = 0, SetDataOptions options = SetDataOptions.Discard) where TData : struct
         {
-            SetData(device, new DataPointer(Interop.Fixed(ref fromData), Utilities.SizeOf<TData>()), offsetInBytes, options);
+            SetData(device, new DataPointer(Native.Fixed(ref fromData), Utilities.SizeOf<TData>()), offsetInBytes, options);
         }
 
         /// <summary>
@@ -460,8 +460,8 @@ namespace SharpDX.Toolkit.Graphics
         /// <unmanaged-short>ID3D11DeviceContext::Map</unmanaged-short>
         public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int startIndex = 0, int elementCount = 0, int offsetInBytes = 0, SetDataOptions options = SetDataOptions.Discard) where TData : struct
         {
-            var sizeOfT = Interop.SizeOf<TData>();
-            var sourcePtr = (IntPtr)((byte*) Interop.Fixed(fromData) + startIndex*sizeOfT);
+            var sizeOfT = Native.SizeOf<TData>();
+            var sourcePtr = (IntPtr)((byte*)Native.Fixed(fromData) + startIndex*sizeOfT);
             var sizeOfData = (elementCount == 0 ? fromData.Length : elementCount)*sizeOfT;
             SetData(device, new DataPointer(sourcePtr, sizeOfData), offsetInBytes, options);
         }
@@ -704,7 +704,7 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(ref value));
+            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Native.Fixed(ref value));
         }
 
         /// <summary>
@@ -744,7 +744,7 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
+            return new Buffer<T>(device, description, bufferFlags, viewFormat, (IntPtr)Native.Fixed(initialValue));
         }
 
         /// <summary>
@@ -766,7 +766,7 @@ namespace SharpDX.Toolkit.Graphics
             viewFormat = CheckPixelFormat(bufferFlags, elementSize, viewFormat);
 
             var description = NewDescription(bufferSize, elementSize, bufferFlags, usage);
-            return new Buffer(device, description, bufferFlags, viewFormat, (IntPtr)Interop.Fixed(initialValue));
+            return new Buffer(device, description, bufferFlags, viewFormat, (IntPtr)Native.Fixed(initialValue));
         }
 
         /// <summary>
@@ -841,7 +841,7 @@ namespace SharpDX.Toolkit.Graphics
         /// Initializes the specified device arg.
         /// </summary>
         /// <param name="resource">The resource.</param>
-        protected override void Initialize(Direct3D11.DeviceChild resource)
+        protected sealed override void Initialize(Direct3D11.DeviceChild resource)
         {
             base.Initialize(resource);
 

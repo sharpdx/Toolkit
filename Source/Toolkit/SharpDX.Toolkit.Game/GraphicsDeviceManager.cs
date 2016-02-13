@@ -20,7 +20,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -475,7 +475,13 @@ namespace SharpDX.Toolkit
 
                     break;
                 default:
-                    Utilities.Sleep(TimeSpan.FromMilliseconds(20));
+                    // NOTE SmartK8: Next best thing
+#if WIN8METRO
+                    Task.Delay(TimeSpan.FromMilliseconds(20)).Wait();
+#else
+                    Thread.Sleep(TimeSpan.FromMilliseconds(20));
+#endif     
+
                     try
                     {
                         OnDeviceLost(this, EventArgs.Empty);

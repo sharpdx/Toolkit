@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
-using SharpDX.Mathematics;
 using Factory = SharpDX.DirectWrite.Factory;
 
 namespace SharpDX.Toolkit.Graphics
@@ -169,7 +168,7 @@ namespace SharpDX.Toolkit.Graphics
                     0.0f))
                 {
 
-                    var bounds = new Mathematics.Rectangle(0, 0, pixelWidth, pixelHeight);
+                    var bounds = new SharpDX.Rectangle(0, 0, pixelWidth, pixelHeight);
                     bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
 
                     if (renderingMode == RenderingMode.Aliased)

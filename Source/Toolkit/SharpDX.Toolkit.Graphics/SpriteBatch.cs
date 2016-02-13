@@ -74,6 +74,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -687,24 +688,23 @@ namespace SharpDX.Toolkit.Graphics
                 }
                 else
                 {
-                    IntPtr resourcePtr;
-                    shaderResourceView.GetResource(out resourcePtr);
-                    tempResource._nativePointer = (void*)resourcePtr;
+                    // NOTE SmartK8: Verify functionality
+                    tempResource.NativePointer = shaderResourceView.NativePointer;
                     switch (tempResource.Dimension)
                     {
                         case ResourceDimension.Texture1D:
-                            tempTexture1D._nativePointer = (void*)resourcePtr;
+                            tempTexture1D.NativePointer = shaderResourceView.NativePointer;
                             textureInfo.Width = tempTexture1D.Description.Width;
                             textureInfo.Height = 1;
                             break;
                         case ResourceDimension.Texture2D:
-                            tempTexture2D._nativePointer = (void*)resourcePtr;
+                            tempTexture2D.NativePointer = shaderResourceView.NativePointer;
                             var description2D = tempTexture2D.Description;
                             textureInfo.Width = description2D.Width;
                             textureInfo.Height = description2D.Height;
                             break;
                         case ResourceDimension.Texture3D:
-                            tempTexture3D._nativePointer = (void*)resourcePtr;
+                            tempTexture3D.NativePointer = shaderResourceView.NativePointer;
                             var description3D = tempTexture3D.Description;
                             textureInfo.Width = description3D.Width;
                             textureInfo.Height = description3D.Height;
@@ -720,7 +720,7 @@ namespace SharpDX.Toolkit.Graphics
                     textureInfo.Height = Math.Max(1, textureInfo.Height >> mipIndex);
 
                     // Release the resource retrieved by shaderResourceView.GetResource(out resourcePtr);
-                    Marshal.Release(resourcePtr);
+                    Marshal.Release(shaderResourceView.NativePointer); // NOTE SmartK8: Is this still needed? IMO, no.
                 }
 
                 textureInfos.Add(shaderResourceView, textureInfo);
@@ -820,19 +820,19 @@ namespace SharpDX.Toolkit.Graphics
             }
             else
             {
-                unsafe
-                {
-                    // Sets the texture for this sprite effect.
-                    // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
-                    // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
-                    // setup in the original BasicEffect.fx shader.
-                    GraphicsDevice.PixelShaderStage.SetShaderResources(0, 1, new IntPtr(&nativeShaderResourceViewPointer));
-                }
+                // Sets the texture for this sprite effect.
+                // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
+                // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
+                // setup in the original BasicEffect.fx shader.
+                // NOTE SmartK8 : Calls internal method
+                MethodInfo setShaderResources = GraphicsDevice.PixelShaderStage.GetType().GetMethod("SetShaderResources", BindingFlags.NonPublic | BindingFlags.Instance);
+                setShaderResources.Invoke(GraphicsDevice.PixelShaderStage, new Object[] { 0, 1, nativeShaderResourceViewPointer });
 
                 DrawBatchPerTextureAndPass(ref texture, sprites, offset, count);
 
                 // unbind the texture from pass as it can be used later as a render target
-                GraphicsDevice.PixelShaderStage.SetShaderResources(0, 1, GraphicsDevice.ResetSlotsPointers);
+                // NOTE SmartK8 : Calls internal method
+                setShaderResources.Invoke(GraphicsDevice.PixelShaderStage, new Object[] { 0, 1, GraphicsDevice.ResetSlotsPointers });
             }
         }
 

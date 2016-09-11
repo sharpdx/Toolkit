@@ -617,7 +617,7 @@ namespace SharpDX.Toolkit.Audio
         {
             try
             {
-                masteringLimiter = new MasteringLimiter();
+                masteringLimiter = new MasteringLimiter(device);
                 masteringLimiter.Parameter = masteringLimiterParameters;
                 MasteringVoice.SetEffectChain(new EffectDescriptor(masteringLimiter));
             }
@@ -642,7 +642,7 @@ namespace SharpDX.Toolkit.Audio
 
             try
             {
-                reverb = new Reverb();
+                reverb = new Reverb(device);
                 ReverbVoice.SetEffectChain(new EffectDescriptor(reverb, 1));
                 ReverbVoice.SetEffectParameters(0, reverbParameters);
             }

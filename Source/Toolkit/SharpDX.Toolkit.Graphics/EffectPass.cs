@@ -21,6 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using SharpDX.Direct3D11;
 using SharpDX.Mathematics;
@@ -284,9 +286,12 @@ namespace SharpDX.Toolkit.Graphics
                 // ----------------------------------------------
                 RawSlotLinkSet localLink = stageBlock.ShaderResourceViewSlotLinks;
                 SlotLink* pLinks = localLink.Links;
+
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetShaderResources(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers);
+                    // NOTE SmartK8 : Calls internal method
+                    MethodInfo setShaderResources = shaderStage.GetType().GetMethod("SetShaderResources", BindingFlags.NonPublic | BindingFlags.Instance);
+                    setShaderResources.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers });
                     pLinks++;
                 }
 
@@ -300,7 +305,9 @@ namespace SharpDX.Toolkit.Graphics
                 {
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        shaderStage.SetUnorderedAccessViews(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers, pLinks->UavInitialCount);
+                        // NOTE SmartK8 : Calls internal method
+                        MethodInfo setUnorderedAccessViews = shaderStage.GetType().GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance);
+                        setUnorderedAccessViews.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers });
                         pLinks++;
                     }
                 }
@@ -309,7 +316,9 @@ namespace SharpDX.Toolkit.Graphics
                     // Otherwise, for OutputMergerStage.
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        mergerStage.SetUnorderedAccessViewsKeepRTV(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers, pLinks->UavInitialCount);
+                        // NOTE SmartK8 : Calls internal method
+                        MethodInfo setUnorderedAccessViews = mergerStage.GetType().GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance);
+                        setUnorderedAccessViews.Invoke(mergerStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers, pLinks->UavInitialCount });
                         pLinks++;
                     }
                 }
@@ -321,9 +330,12 @@ namespace SharpDX.Toolkit.Graphics
                     // ----------------------------------------------
                     localLink = stageBlock.ConstantBufferSlotLinks;
                     pLinks = localLink.Links;
+
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        shaderStage.SetConstantBuffers(pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers);
+                        // NOTE SmartK8 : Calls internal method
+                        MethodInfo setConstantBuffers = shaderStage.GetType().GetMethod("SetConstantBuffers", BindingFlags.NonPublic | BindingFlags.Instance);
+                        setConstantBuffers.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, graphicsDevice.ResetSlotsPointers });
                         pLinks++;
                     }
                 }
@@ -447,7 +459,9 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetConstantBuffers(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    // NOTE SmartK8 : Calls internal method
+                    MethodInfo setConstantBuffers = shaderStage.GetType().GetMethod("SetConstantBuffers", BindingFlags.NonPublic | BindingFlags.Instance);
+                    setConstantBuffers.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer });
                     pLinks++;
                 }
 
@@ -458,7 +472,9 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetShaderResources(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    // NOTE SmartK8 : Calls internal method
+                    MethodInfo setShaderResources = shaderStage.GetType().GetMethod("SetShaderResources", BindingFlags.NonPublic | BindingFlags.Instance);
+                    setShaderResources.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer });
                     pLinks++;
                 }
 
@@ -472,7 +488,9 @@ namespace SharpDX.Toolkit.Graphics
                 {
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        shaderStage.SetUnorderedAccessViews(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer, pLinks->UavInitialCount);
+                        // NOTE SmartK8 : Calls internal method
+                        MethodInfo setUnorderedAccessViews = mergerStage.GetType().GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance);
+                        setUnorderedAccessViews.Invoke(mergerStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer, pLinks->UavInitialCount });
                         pLinks++;
                     }
                 }
@@ -481,7 +499,9 @@ namespace SharpDX.Toolkit.Graphics
                     // Otherwise, for OutputMergerStage.
                     for (int i = 0; i < localLink.Count; i++)
                     {
-                        mergerStage.SetUnorderedAccessViewsKeepRTV(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer, pLinks->UavInitialCount);
+                        // NOTE SmartK8 : Calls internal method
+                        MethodInfo setUnorderedAccessViews = mergerStage.GetType().GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance);
+                        setUnorderedAccessViews.Invoke(mergerStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer, pLinks->UavInitialCount });
                         pLinks++;
                     }
                 }
@@ -493,7 +513,9 @@ namespace SharpDX.Toolkit.Graphics
                 pLinks = localLink.Links;
                 for (int i = 0; i < localLink.Count; i++)
                 {
-                    shaderStage.SetSamplers(pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer);
+                    // NOTE SmartK8 : Calls internal method
+                    MethodInfo setSamplers = shaderStage.GetType().GetMethod("SetSamplers", BindingFlags.NonPublic | BindingFlags.Instance);
+                    setSamplers.Invoke(shaderStage, new Object[] { pLinks->SlotIndex, pLinks->SlotCount, pLinks->Pointer });
                     pLinks++;
                 }
             }

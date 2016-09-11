@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using SharpDX.IO;
 using SharpDX.Mathematics;
@@ -575,7 +576,7 @@ namespace SharpDX.Toolkit.Serialization
             if (!Utilities.IsEnum(typeof(T)))
                 throw new ArgumentException("T generic parameter must be a valid enum", "value");
 
-            var pValue = Interop.Fixed(ref value);
+            var pValue = Native.Fixed(ref value);
 
             switch (Utilities.SizeOf<T>())
             {

@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using SharpDX.DXGI;
 using SharpDX.Direct3D11;
 using SharpDX.IO;
@@ -463,8 +464,9 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe bool GetData<TData>(Texture stagingTexture, TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
         {
-            return GetData(stagingTexture, new DataPointer((IntPtr)Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
+            return GetData(stagingTexture, new DataPointer((IntPtr)Native.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
         }
+
 
         /// <summary>
         /// Copies the content of this texture from GPU memory to a pointer on CPU memory using a specific staging resource.
@@ -615,7 +617,7 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null) where TData : struct
         {
-            SetData(device, new DataPointer((IntPtr)Interop.Fixed(fromData), fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
+            SetData(device, new DataPointer((IntPtr)Native.Fixed(fromData), fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
         }
 
         /// <summary>

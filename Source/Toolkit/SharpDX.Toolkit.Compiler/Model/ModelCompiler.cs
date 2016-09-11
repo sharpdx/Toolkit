@@ -434,7 +434,7 @@ namespace SharpDX.Toolkit.Graphics
                         foreach (var key in channel.ScalingKeys)
                         {
                             var keyFrame = GetKeyFrame((float)(key.Time / ticksPerSecond), keyFrames);
-                            keyFrame.Value = new CompositeTransform(ConvertVector(key.Value), Mathematics.Quaternion.Identity, Vector3.Zero);
+                            keyFrame.Value = new CompositeTransform(ConvertVector(key.Value), Quaternion.Identity, Vector3.Zero);
                         }
                     }
 
@@ -511,7 +511,7 @@ namespace SharpDX.Toolkit.Graphics
                 var actual = current.Value;
 
                 if ((interpolated.Translation - actual.Translation).LengthSquared() < TranslationThreshold &&
-                   Mathematics.Quaternion.Dot(interpolated.Rotation, actual.Rotation) > RotationThreshold &&
+                   Quaternion.Dot(interpolated.Rotation, actual.Rotation) > RotationThreshold &&
                     (interpolated.Scale - actual.Scale).LengthSquared() < TranslationThreshold)
                 {
                     keyFrames.Remove(node);
@@ -960,10 +960,10 @@ namespace SharpDX.Toolkit.Graphics
             return Matrix.Transpose(*(Matrix*)&sourceMatrix);
         }
 
-        private static SharpDX.Mathematics.Quaternion ConvertQuaternion(Assimp.Quaternion value)
+        private static Quaternion ConvertQuaternion(Assimp.Quaternion value)
         {
             // Assimp quaternions are stored in wxyz order
-            return new SharpDX.Mathematics.Quaternion(value.X, value.Y, value.Z, value.W);
+            return new Quaternion(value.X, value.Y, value.Z, value.W);
         }
 
         private TextureAddressMode ConvertWrapMode(TextureWrapMode wrapMode)

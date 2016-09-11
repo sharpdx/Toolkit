@@ -58,17 +58,17 @@ namespace SharpDX.Toolkit.Serialization
         {
             if (Mode == SerializerMode.Write)
             {
-                Writer.Write(value.iX);
-                Writer.Write(value.iY);
-                Writer.Write(value.iZ);
-                Writer.Write(value.iW);
+                Writer.Write((Int32)(value.X ? 1 : 0));
+                Writer.Write((Int32)(value.Y ? 1 : 0));
+                Writer.Write((Int32)(value.Z ? 1 : 0));
+                Writer.Write((Int32)(value.W ? 1 : 0));
             }
             else
             {
-                value.iX = Reader.ReadInt32();
-                value.iY = Reader.ReadInt32();
-                value.iZ = Reader.ReadInt32();
-                value.iW = Reader.ReadInt32();
+                value.X = Reader.ReadInt32() != 0;
+                value.Y = Reader.ReadInt32() != 0;
+                value.Z = Reader.ReadInt32() != 0;
+                value.W = Reader.ReadInt32() != 0;
             }
         }
 

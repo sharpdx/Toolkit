@@ -22,7 +22,10 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using SharpDX.Mathematics;
+using SharpDX.Mathematics.Interop;
 using SharpDX.Toolkit.Collections;
 using Device = SharpDX.Direct3D11.Device;
 
@@ -166,7 +169,7 @@ namespace SharpDX.Toolkit.Graphics
             // Global cache for all input signatures inside a GraphicsDevice.
             inputSignatureCache = new Dictionary<InputSignatureKey, InputSignatureManager>();
             sharedDataPerDevice = new Dictionary<object, object>();
-
+            
             // Create default Effect pool
             DefaultEffectPool = EffectPool.New(this, "Default");
 
@@ -1088,7 +1091,9 @@ namespace SharpDX.Toolkit.Graphics
             for (int i = 0; i < viewports.Length; i++)
                 this.viewports[i] = viewports[i];
 
-            RasterizerStage.SetViewports(this.viewports, viewports.Length);
+            // NOTE SmartK8 : Calls internal method
+            MethodInfo setShaderResources = RasterizerStage.GetType().GetMethod("SetViewports", BindingFlags.NonPublic | BindingFlags.Instance);
+            setShaderResources.Invoke(RasterizerStage, new Object[] { viewports.Length, Marshal.UnsafeAddrOfPinnedArrayElement(viewports, 0) });
         }
 
         /// <summary>
@@ -1209,7 +1214,8 @@ namespace SharpDX.Toolkit.Graphics
         ///   <unmanaged-short>ID3D11DeviceContext::SOSetTargets</unmanaged-short>
         public void ResetStreamOutputTargets()
         {
-            Context.StreamOutput.SetTargets(0, null, null);
+            // NOTE SmartK8 : Verify functionality
+            Context.StreamOutput.SetTargets(null);
         }
 
         /// <summary>
@@ -1352,7 +1358,8 @@ namespace SharpDX.Toolkit.Graphics
             if (maxSlotCountForVertexBuffer == 0)
                 return;
 
-            InputAssemblerStage.SetVertexBuffers(0, maxSlotCountForVertexBuffer, ResetSlotsPointers, ResetSlotsPointers, ResetSlotsPointers);
+            // NOTE SmartK8: Verify functionality
+            InputAssemblerStage.SetVertexBuffers(0);
 
             maxSlotCountForVertexBuffer = 0;
         }
@@ -1416,7 +1423,7 @@ namespace SharpDX.Toolkit.Graphics
                 throw new InvalidOperationException("Cannot perform a Draw/Dispatch operation without an EffectPass applied.");
 
             var inputLayout = CurrentPass.GetInputLayout(currentVertexInputLayout);
-            InputAssemblerStage.SetInputLayout(inputLayout);
+            InputAssemblerStage.InputLayout = inputLayout; // NOTE SmartK8: Verify functionality
         }
 
         /// <summary>

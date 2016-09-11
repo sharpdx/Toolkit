@@ -50,3 +50,27 @@ Temp*/
 BuildErrors.log
 #ignore certification test results
 Source/CertificationTests/Results/*
+/External
+/packages
+/Source/VisualStudio
+/Source/Tools
+/Source/Tests
+/Source/SharpDX.XInput
+/Source/SharpDX.XAudio2
+/Source/SharpDX.RawInput
+/Source/SharpDX.MediaFoundation
+/Source/SharpDX.Mathematics
+/Source/SharpDX.DXGI
+/Source/SharpDX.DirectSound
+/Source/SharpDX.DirectManipulation
+/Source/SharpDX.DirectInput
+/Source/SharpDX.DirectComposition
+/Source/SharpDX.Direct3D9
+/Source/SharpDX.Direct3D12
+/Source/SharpDX.Direct3D11.Effects
+/Source/SharpDX.Direct3D11
+/Source/SharpDX.Direct2D1
+/Source/SharpDX.Desktop
+/Source/SharpDX.D3DCompiler
+/Source/SharpDX.Animation
+/Source/SharpDX

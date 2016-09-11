@@ -18,16 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.IO;
-using SharpDX.WIC;
-
 namespace SharpDX.Toolkit.Graphics.Tests
 {
     public class Program

@@ -20,7 +20,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using SharpDX.Collections;
 using SharpDX.Toolkit.Collections;
 using SharpDX.Toolkit.Content;
@@ -433,7 +433,12 @@ namespace SharpDX.Toolkit
             // If this instance is not active, sleep for an inactive sleep time
             if (!IsActive)
             {
-                Utilities.Sleep(inactiveSleepTime);
+                // NOTE SmartK8: Next best thing
+#if WIN8METRO
+                Task.Delay(inactiveSleepTime).Wait();
+#else
+                Thread.Sleep(inactiveSleepTime);
+#endif     
             }
 
             // Update the timer
@@ -476,8 +481,16 @@ namespace SharpDX.Toolkit
                 {
                     // check if we can sleep the thread to free CPU resources
                     var sleepTime = TargetElapsedTime - accumulatedElapsedGameTime;
-                    if (sleepTime > TimeSpan.Zero)
-                        Utilities.Sleep(sleepTime);
+                    if(sleepTime > TimeSpan.Zero)
+                    {
+                        // NOTE SmartK8: Next best thing
+#if WIN8METRO
+                        Task.Delay(sleepTime).Wait();
+#else
+                        Thread.Sleep(sleepTime);
+#endif
+
+                    }
 
                     return;
                 }

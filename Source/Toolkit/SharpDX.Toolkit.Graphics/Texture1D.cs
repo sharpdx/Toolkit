@@ -151,7 +151,7 @@ namespace SharpDX.Toolkit.Graphics
         /// </remarks>
         public unsafe static Texture1D New<T>(GraphicsDevice device, int width, PixelFormat format, T[] textureData, TextureFlags flags = TextureFlags.ShaderResource, ResourceUsage usage = ResourceUsage.Immutable) where T : struct
         {
-            return new Texture1D(device, NewDescription(width, format, flags, 1, 1, usage), GetDataBox(format, width, 1, 1, textureData, (IntPtr)Interop.Fixed(textureData)));
+            return new Texture1D(device, NewDescription(width, format, flags, 1, 1, usage), GetDataBox(format, width, 1, 1, textureData, (IntPtr)Native.Fixed(textureData)));
         }
 
         /// <summary>

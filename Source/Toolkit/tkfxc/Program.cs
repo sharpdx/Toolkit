@@ -328,6 +328,7 @@ namespace SharpDX.Toolkit.Graphics
             ErrorColor();
             Console.Error.WriteLine("Compilation has errors. Process aborted.");
             ResetColor();
+            Console.ReadKey();
             Environment.Exit(-1);
         }
 
